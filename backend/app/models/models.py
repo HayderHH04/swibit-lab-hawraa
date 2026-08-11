@@ -20,6 +20,6 @@ class Task(Base):
     description = Column(String, nullable=True)
     priority = Column(String, default="medium")
     completed = Column(Boolean, default=False)
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(Integer, ForeignKey("users.id"),nullable=False)
 
     owner = relationship("User", back_populates="tasks")
