@@ -1,28 +1,30 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from typing import Optional
 
 
-class TaskCreate(BaseModel):
+class TaskBase(BaseModel):
     title: str
-    description: str | None = None
-    priority: str = "medium"
-    owner_id: int
+    description: Optional[str] = None
+    priority: Optional[str] = "medium"
+    completed: Optional[bool] = False
+
+
+class TaskCreate(TaskBase):
+    pass
 
 
 class TaskUpdate(BaseModel):
-    title: str
-    description: str | None = None
-    priority: str
-    completed: bool
+    title: Optional[str] = None
+    description: Optional[str] = None
+    priority: Optional[str] = None
+    completed: Optional[bool] = None
 
 
-class TaskResponse(BaseModel):
+class TaskResponse(TaskBase):
     id: int
-    title: str
-    description: str | None
-    priority: str
-    completed: bool
     owner_id: int
+    model_config =ConfigDict(from_attributes=True)
 
-    model_config = {
-        "from_attributes": True
-    }
+    
+
+
