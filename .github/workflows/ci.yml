@@ -35,8 +35,8 @@ jobs:
           pip install -r backend/requirements.txt
 
       - name: Run tests
-        env :
-           DATABASE_URL=postgresql://postgres:postgrespassword@localhost:5432/task_db
+        env:
+           DATABASE_URL:postgresql://postgres:postgrespassword@localhost:5432/task_db
         run: |
             cd backend
             python -m pytest 
