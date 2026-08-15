@@ -6,7 +6,7 @@ import os
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://postgres:hawraa@localhost:5432/task_db"
+    "postgresql://postgres:postgrespassword@localhost:5432/task_db"
 )
 engine = create_engine(DATABASE_URL)
 
