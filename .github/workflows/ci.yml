@@ -36,7 +36,7 @@ jobs:
 
       - name: Run tests
         env:
-           DATABASE_URL:postgresql://postgres:postgrespassword@localhost:5432/task_db
+           DATABASE_URL: postgresql://postgres:postgrespassword@localhost:5432/task_db
         run: |
             cd backend
             python -m pytest 
