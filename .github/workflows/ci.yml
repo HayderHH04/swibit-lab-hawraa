@@ -1,14 +1,18 @@
-name: CI
+name: CI Pipeline
 
 on:
   push:
+    branches: [ "feature/jwt-auth", "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
     services:
       postgres:
-        image: postgres:latest
+        image: postgres:15
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgrespassword
@@ -20,7 +24,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        
+
       redis:
         image: redis:latest
         ports:
@@ -30,19 +34,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        
-      redis:
-        image: redis:latest
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5 
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -51,12 +45,13 @@ jobs:
 
       - name: Install dependencies
         run: |
+          pip install --upgrade pip
           pip install -r backend/requirements.txt
 
       - name: Run tests
         env:
-           DATABASE_URL: postgresql://postgres:postgrespassword@localhost:5432/task_db
-           REDIS_URL: redis://localhost:6379/0
+          DATABASE_URL: postgresql://postgres:postgrespassword@localhost:5432/task_db
+          REDIS_URL: redis://localhost:6379/0
         run: |
-            cd backend
-            python -m pytest 
+          cd backend
+          python -m pytest
