@@ -1,9 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from typing import Optional
 
 
 class UserCreate(BaseModel):
+    username: str
     email: str
     password: str
+    is_admin: Optional[bool] = False
 
 
 class UserUpdate(BaseModel):
@@ -12,9 +15,9 @@ class UserUpdate(BaseModel):
 
 
 class UserResponse(BaseModel):
+    username: str
     id: int
-    email: str
+    is_admin: bool
+    
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = ConfigDict(from_attributes=True)
