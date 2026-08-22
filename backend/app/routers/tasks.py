@@ -2,7 +2,7 @@ import json
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.models.models import Task, User
+from app.models import Task, User
 from app.schemas.task import TaskCreate, TaskResponse, TaskUpdate
 from app.core.deps import get_current_user
 from app.core.redis import redis_client
@@ -16,15 +16,21 @@ def get_tasks(db: Session = Depends(get_db), current_user: User = Depends(get_cu
     
     if cached_tasks:
         return json.loads(cached_tasks)
+    if current_user.is_admin:
+        tasks = db.query(Task).all()
+    else:  
+        tasks = db.query(Task).filter(Task.owner_id == current_user.id).all()
     
-    tasks = db.query(Task).filter(Task.owner_id == current_user.id).all()
+
     tasks_data = [TaskResponse.model_validate(task).model_dump() for task in tasks]
     
     redis_client.set(cache_key, json.dumps(tasks_data), ex=300)
     return tasks_data
 
 @router.post("/", response_model=TaskResponse)
-def create_task(task_data: TaskCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_task(task_data: TaskCreate, 
+                db: Session = Depends(get_db), 
+                current_user: User = Depends(get_current_user)):
     new_task = Task(**task_data.model_dump(), owner_id=current_user.id)
     db.add(new_task)
     db.commit()
